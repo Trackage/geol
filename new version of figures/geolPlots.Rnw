@@ -1,0 +1,46 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{Sweave}
+
+\begin{document}
+
+
+<<eval=TRUE,print=FALSE,echo=TRUE,fig=TRUE>>=
+
+
+library(tripEstimation)
+library(maps)
+library(maptools)
+library(raster)
+
+loi <- c(158 + 57/60, -(54 + 30/60))
+
+twilight <- sunriset(matrix(loi, ncol = 2), as.POSIXct("2010-12-21 00:00:00"), POSIXct.out = TRUE, direction = "sunset")
+
+toi <- as.POSIXct(twilight$time, tz = "GMT")
+
+times <- seq(toi - 3600, toi + 3600, length = 30)
+
+sun0 <- solar(toi)
+
+im <- list(x = seq(100, 220, length = 100), y = seq(-70, -20, length = 80))
+g <- as.matrix(expand.grid(x = im$x, y = im$y))
+
+el <- elevation(g[,1], g[,2], sun0)
+
+im$z <- matrix(-abs(el), length(im$x), length(im$y))
+
+im <- image2Grid(im)
+p4 <- "+proj=laea +lon_0=174.5 +lat_0=-65.5 +units=km"
+
+image(im)
+
+map(add = TRUE)
+contour(im, add = TRUE, levels = -0.8329963)
+
+points(loi[1], loi[2])
+@
+
+
+
+
+\end{document}

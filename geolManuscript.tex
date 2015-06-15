@@ -1,0 +1,872 @@
+%% TODO
+
+%% cut down on the self references, just put one at the top of the
+%% methods, and so on
+
+%% SST usage, consider Anders work (search "*")
+
+%% need reference in Discussion for ongoing temperature work and in
+%% Auxiliary Data
+
+%% check usage for citations, are they in text etc.
+
+%% check out formatting in references, e.g. URLs (with spaces!)
+
+%% line spacing
+
+%% abstract
+
+%% figures format etc. 
+
+% Template for PLoS
+% Version 1.0 January 2009
+%
+% To compile to pdf, run:
+% latex plos.template
+% bibtex plos.template
+% latex plos.template
+% latex plos.template
+% dvipdf plos.template
+
+\documentclass[10pt]{article}
+
+% amsmath package, useful for mathematical formulas
+\usepackage{amsmath}
+% amssymb package, useful for mathematical symbols
+\usepackage{amssymb}
+
+% graphicx package, useful for including eps and pdf graphics
+% include graphics with the command \includegraphics
+\usepackage{graphicx}
+
+% cite package, to clean up citations in the main text. Do not remove.
+\usepackage{cite}
+
+\usepackage{color} 
+
+% Use doublespacing - comment out for single spacing
+\usepackage{setspace} 
+\doublespacing
+
+%% MDSUMNER PACKAGES
+\usepackage{Sweave}
+
+% Text layout
+\topmargin 0.0cm
+\oddsidemargin 0.5cm
+\evensidemargin 0.5cm
+\textwidth 16cm 
+\textheight 21cm
+
+% Bold the 'Figure #' in the caption and separate it with a period
+% Captions will be left justified
+\usepackage[labelfont=bf,labelsep=period,justification=raggedright]{caption}
+
+% Use the PLoS provided bibtex style
+\bibliographystyle{plos2009}
+
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+
+% Leave date blank
+\date{}
+
+\pagestyle{myheadings}
+%% ** EDIT HERE **
+
+
+%% ** EDIT HERE **
+%% PLEASE INCLUDE ALL MACROS BELOW
+
+
+%% END MACROS SECTION
+
+\begin{document}
+
+% Title must be 150 characters or less
+\begin{flushleft}
+{\Large
+\textbf{A Bayesian Approach To Light Level Geo-Location From Archival Tags}
+}
+% Insert Author names, affiliations and corresponding author email.
+\\
+Michael D. Sumner$^{1,\ast}$, 
+Simon J. Wotherspoon$^{2}$, 
+Mark A. Hindell$^{3}$
+\\
+\bf{1} Michael D. Sumner Institute of Marine and Antarctic Studies,
+University of Tasmania, Hobart, Tasmania, Australia\\
+$\ast$ E-mail: mdsumner@utas.edu.au
+\bf{2} Simon J. Wotherspoon Institute of Marine and Antarctic Studies,
+University of Tasmania, Hobart, Tasmania, Australia
+\bf{3} Mark A. Hindell Institute of Marine and Antarctic Studies,
+University of Tasmania, Hobart, Tasmania, Australia
+%%\\
+%%\bf{2} Author2 Dept/Program/Center, Institution Name, City, State, Country
+%%\\
+%%\bf{3} Author3 Dept/Program/Center, Institution Name, City, State, Country
+%%\\
+
+\end{flushleft}
+
+% Please keep the abstract between 250 and 300 words
+\section*{Abstract}
+A detailed method for applying light level geo-location within a
+Bayesian framework for location estimation is presented. We develop a
+likelihood model for the changes observed in measured light level
+during twilight and show how to incorporate other sources of
+data. This approach provides a primary location estimate for each
+twilight and utilizes all of the available data from archival tags.
+
+% Please keep the Author Summary between 150 and 200 words
+% Use first person. PLoS ONE authors please skip this step. 
+% Author Summary not valid for PLoS ONE submissions.   
+%%\section*{Author Summary}
+
+\section*{Introduction}
+
+
+Determining location from archival tag data, such as light level and
+temperature, is an important method for the study of marine animals,
+particularly those that spend time at depth and migrate over long
+distances.  In general, locations derived from archival tags are not
+as accurate as those from satellite tags but satellite methods do not
+work underwater and the tags are considerably more expensive. The
+major source of inaccuracy is simply that observed light levels are
+such an indirect indicator of global location, but the problem is
+compounded by analytical approaches that are statistically inefficient
+and under-utilize the tag-measured data. For example, the evaluation
+of estimate accuracy is often performed as a separate process to the
+estimation, with reference to secondary sources, such as maps of sea
+surface temperature. These problems were described by
+\cite{sibert2007sml}, who provided a state-space approach for
+geo-location from raw data with a random walk movement model. By
+applying the general approach adopted in \cite{sumner2009}, we
+present a methodology that provides two locations per day, each with
+quantified precision and estimates for intermediate locations from an
+integrated movement model.
+
+%%New tag tech: robinson2009field
+
+The technique of determining location from light levels relies on the
+relationship of tag-measurable light to solar elevation, at particular
+times of day. Solar elevation is the angle of the position of the sun
+relative to the horizon.  ``Light level'' is not an absolute measure
+and the actual relation between solar elevation and measured light
+depends on the particular tag construction and calibration. However,
+the daily pattern of change in solar elevation has a predictable
+effect on measured light levels and methods of determing location from
+this pattern are referred to as ``light level geo-location''
+\cite{H94}.  There are two main approaches: ``threshold methods''
+which detect signature patterns that mark particular solar events, and
+``curve methods'' (or ``template methods'') which use patterns in the rate of
+change of solar elevation
+\cite{Welch1999,HB01,MBCG01,Ekstrom,Ekstrom2007}.  Both approaches
+rely on twilight as the most informative time of day when solar motion
+has the greatest influence on changes in measurable light level.
+
+Direct astronomical measurements can be used to derive location with
+an accuracy of a few kilometres or better
+\cite{bowditch2002american}. The ``longitude problem'' for eighteenth
+century navigation was due to the lack of precise and reliable
+time-keeping machines \cite{Lon:S98}. With an accurate reference time,
+longitude is easily derived from the sun's azimuth and latitude from
+its elevation.  Time-keeping in miniature tags is now cheap and simple
+but given that tags cannot directly measure solar elevation their
+successful use is largely hindered by the ``latitude problem''. 
+
+Light data from archival tags provide only an indirect indication of
+angular solar position. Light level geo-location is only possible
+during times when the sun actually rises and sets, and the factors
+that degrade the estimation process tend to mostly affect the
+estimation of latitude.  Longitude is generally much simpler to
+determine from light levels than latitude \cite{HB01}, but both are
+susceptible to a variety of problems. In terms of modelling the data
+collection process they are two dependent parameters that arguably
+cannot be cleanly separated.
+
+\subsection{Light-based derivation techniques}
+\label{sec:lighttech}
+Light level geo-location has been used since the mid 1980's, with the
+first work from a collaborative study by Northwest Pacific and NOAA
+for tagging tuna \cite{SGNOAA86,HAB86}. \cite{SGNOAA86} gave a
+detailed analysis on the limits on latitude determination by
+depth-specific temperatures. \cite{WDRCN92} provided the first general
+application of light level geo-location, shortly followed by
+\cite{H94}. Together these works established the problems of latitude
+determination during equinox and the use of ocean temperatures as a
+way to improve otherwise problematic estimates. This largely set the
+context for applications of geo-location: longitude and latitude are
+estimated separately, then further work is done to correct poor
+estimates. Innovations in techniques for deriving location from light
+data have been relatively rare and many publications state that the
+limits of light derivation have been met and must be augmented by
+auxiliary data \cite{BM02,BBTW03,TBBW04,STAH05}. Published works that
+explore the application of light methods in detail are
+\cite{WDRCN92,Welch1999,MBCG01}.  Recently methods to extend the use
+of light data in new ways have been introduced by
+\cite{sibert2007sml,Ekstrom2007} and \cite{evans2008report}.
+
+The major difference between existing methods for light-level
+geo-location is that of ``fixed point'' methods that choose critical
+times and ``curve'' methods that use the rate of change in light level
+during twilight.  The classic and well-known description is a form of
+threshold method that requires the definition of reference angles for
+solar elevation (corresponding to noon, sunrise and sunset) inferred
+from identifiable light level values. Based on the same principles
+used by eighteenth century mariners, the time of local noon is
+determined from the mid-point of an assumed symmetric light signal
+(giving longitude), and the length of day is determined from the time
+between sunrise and local noon (giving latitude). The classic method
+effectively assumes a fixed point that is constant over a whole day,
+then solves for that in the solar equations. This threshold approach
+is particularly susceptible to asymmetric weather conditions between
+twilight events, Solar equinoxes, the movement of the animal, and to
+slight errors in the determination of sunrise, sunset and noon
+\cite{HB01,Ekstrom}.
+
+\subsubsection{Fixed point methods }
+In fixed point, or threshold, methods there are a number of ways that
+the times of twilights or zenith values are determined.  The major
+distinctions are between ``fixed reference'', ``variable reference''
+and ``reflection'' methods \cite{M01}, with the difference between
+these concerning the estimate of latitude.  A fixed reference light
+level is chosen as representative of the time of the definitive zenith
+angle, and latitude is found by using these times in standard solar
+algorithms.  Variable reference methods choose a level as a relative
+value for each day. Reflection methods rely on comparision of
+subsequent dawn/dusk light curves to define these times by finding the
+best fit or match between them \cite{Hill2003}.  In essence, these
+methods estimate latitude based on the apparent day length, and so
+latitudinal estimates are particularly susceptible to error near an
+equinox, when the day length is the same at every latitude.
+
+\subsubsection{Curve methods}
+The precise rate at which the sun appears to rise or set is a function
+of latitude.  Where fixed point methods effectively estimate latitude
+from the apparent day length, curve methods estimate latitude from the
+apparent rate of change of light level.
+
+Published accounts of curve methods are confined to the works of
+\cite{Ekstrom}, \cite{MBCG01} and \cite{sibert2007sml}. Importantly,
+these methods provide a means for better utilizing the available light
+data and allowing for atmospheric effects. The advantages of the curve
+approach depends on three major facets: it uses the rate of change of
+solar elevation over time, prescribes a limit to be applied to the
+range of angles used based on physical principles, and easily accounts
+for effects caused by slow variations in weather.  Curve methods use
+the actual series of recorded light levels and its relationship to
+solar angles.  This uses more of the actual light data, and is less
+susceptible to movement of the tag between the twilight periods and
+the equinox problem described above \cite{Ekstrom}.
+
+%% further difficulties
+Curve methods are still prone to physical problems that disturb the
+relationship between solar elevation and measured light that would
+otherwise provide a solution built purely on principles of astronomy
+and atmospheric physics \cite{Ekstrom2007}. The animal's movement and
+behaviour during twilight, and attenuation by clouds and water depth
+disturb the relation between ambient light level and solar elevation
+that are difficult or impossible to account for directly.  Further
+problems such as moonlight, atmospheric effects and depth attenuation
+remain incompletely explored, with the work of
+\cite{Ekstrom2007,sibert2007sml} and
+\cite{evans2008report}\footnote{See the abstract by Hartog et al. in
+  \cite{evans2008report}.} providing directions for further work.  The
+actual measured response of the tag to light, data discretization, or
+further processing depend on the particular construction and design of
+any given tag, presenting even more variations that need to be
+accounted for in models used to derive location. This complex of
+problems requires a very general and flexible approach that can be
+applied to a wide range of tags and data collection scenarios.
+
+
+\subsection{Aims of this study}
+%% Hindell: [You haven't actually given hard numbers regarding
+%% location accuracies - perhaps briefly summarise them, and then
+%% point out that they can be improved]
+
+
+There is considerable room for improvement in existing light-level
+geo-location estimates, and in particular, from methods that separate
+the derivation of location from the estimation of model uncertainty
+fail to fully utilize the available information. We apply a version of
+a curve method within the Bayesian framework introduced in
+\cite{sumner2009}.
+
+The key component provides the likelihood of predicted light levels
+given the measured light levels. A given location $x$ at time $t$ has
+a known sequence of solar elevation providing the predicted light
+levels via a tag calibration. As in the previous work we augment the
+light data with auxiliary environmental data to limit the range of
+locations by comparison to independent environmental databases. A
+behavioural model links the estimates temporally in a physically
+realistic way.
+
+The following assumptions apply to our application of light level
+geo-location.
+
+\begin{enumerate}
+\item{The construction of a relationship between solar elevation and
+    light depends upon the existence of the calibration
+    data.} \item{This works on (log) light measured at or near the
+    surface, allowing for an additive offset to account for general
+    cloud conditions and ignoring the need for depth
+    correction.}\item{Twilight periods are identified from the raw
+    data (ensuring that twilight occurs within the period is
+    sufficient) and are assumed as inputs to the model.}
+\end{enumerate}
+% \item{ The conditions affecting light level that are
+%     not due to changes in solar elevation are constant during each
+%     twilight. }
+
+
+%% discussion?
+These assumptions will not work for all tags, but they provide a
+relatively simply application to illustrate the overall approach.
+Indeed, implementations must be very tag-specific as there are a wide
+variety of models, with different light responses, quantization errors
+and onboard processing.  The key component is a likelihood function
+that can be defined for the data set and alternative methods, such as
+those by \cite{Ekstrom2007} or \cite{sibert2007sml}, or methods
+relying on measurement of the length of twilight could be used. We
+want to encourage a modular approach to the problem in which various
+components can be deployed from related studies as appropriate for
+particular species, environments or tags.
+
+
+%%Summary of the paper:
+We present the required components of the approach: a function to
+calculate solar elevation from position and time, a calibration
+function relating measured light-level to solar elevation, a lookup
+function to provide a time-specific mask location and a behavioural
+model. We present two examples of archival tags from different
+species: a southern elephant seal and a Subantarctic fur seal.
+
+%%% advantages to expand on here, in results and discussion
+The key advantages of the approach presented here are as follows.
+
+\begin{enumerate}
+\item{The method provides two independent locations per day}
+\item{Each location has an individual error estimate.}
+\item{Estimation is less susceptible to equinox problems due to
+    independence from calculated daylength and ability to incorporate
+    non-light data.}
+\item{The framework can admit any information that is available so
+    that periods in which the light data are poor or missing are
+    automatically augmented by the other data sources.}
+\item{The approach is open and fairly simple to modify or update so remaining
+    problems can be addressed by inspecting the contribution of each
+    component to the result and modifying the application as
+    required.}
+\end{enumerate}
+
+
+
+
+
+% Results and Discussion can be combined.
+\section*{Results}
+
+For the fur seal example, only one twilight period is available during
+the afternoon on the 10 June 1999 at the release site at Amsterdam
+Island. For the elephant seal example, there was one appropriate
+twilight at the start of the trip (28 January 2002), and three at the end
+of the of the trip at Macquarie Island (25-26 September 2002). The solar
+elevation range for both examples was set at [-8, 5] chosen from short
+test runs. To exclude light data outside of this range, the $\sigma$
+term is increased by an order of magnitude.
+
+The fur seal example was run for 1.4 x $10^{5}$ iterations, the
+elephant seal example was run for 7.8 x $10^{5}$ iterations. For both
+the first 1 x $10^{4}$ samples were discarded to allow for burn-in.
+
+The estimates over time for longitude and latitude are shown in
+Figure~\ref{fig:rawlonlat_AI} for the Subantarctic fur seal and in
+Figure~\ref{fig:rawlonlat_MI} for the southern elephant seal. These
+estimates consist of two independent locations per day, with
+confidence intervals for each. The posterior mean value is plotted
+(red) with the 95\% confidence interval. There is no change in the overall value of the location
+precision at times of equinox for either example.
+
+
+
+The range (in kms) of each estimate is plotted for longitude and
+latitude in Figure~\ref{fig:locationPrecisionMI} and
+Figure~\ref{fig:locationPrecisionAI}.
+
+Figure~\ref{fig:timeSpentZ_MI} and Figure~\ref{fig:timeSpentZ_AI} show
+the time spent maps derived from the entire posterior for the
+intermediate locations. The fur seal has travelled directly to the
+east, taking time to slowly move to the north. No data is available
+for this after 19 July 1999. The fur seal travels from Macquarie Island
+directly to the south-west to the coast of Antarctica at 140$^o$ E
+where it remains for several weeks when it moves further west. It then
+returned back to the east and north of Macquarie Island to the
+shallower waters of the Campbell Plateau, remaining for several weeks
+and then returning directly to Macquarie Island.
+
+% \begin{figure}
+%   \begin{center}
+%     <<fig=TRUE,echo=FALSE,print=FALSE>>=
+  
+    % f1 <- function(x) contourLines(as.local.pimg(x), levels = quantile(x$image[x$image > 0], 0.95))
+    % f2 <- function(x) {
+    %   x <- as.local.pimg(x)
+    %   xsub <- rowMeans(x$z) > 0
+    %   ysub <- colMeans(x$z) > 0
+    %   x <- list(x = x$x[xsub], y = x$y[ysub], z = x$z[xsub, ysub])
+    %   x <- project(as.matrix(expand.grid(x$x, x$y)), "+proj=laea +lon_0=85 +lat_0=-35 +units=km")
+
+    %   c(diff(range(x[,1])), diff(range(x[,2])))
+    % }
+
+    % load("G:\\backup\\Elements\\Azimuth\\DATA\\mcmcGeo\\99AT265-J261\\round5\\readyRun.Rdata")
+    % library(tripEstimation)
+    % lon.min <- 75
+    % lon.max <- 95
+    % lat.min <- -40
+    % lat.max <- -30
+
+    % tm <- tapply(d$gmt, d$segment, mean)
+    % tm <- c(min(tm) - 3600, tm)
+
+
+    % img <- pimg.list(tm, c(75, 95), c(-40, -30), c(200, 200), Z = FALSE)
+
+
+    % xfiles <- list.files("G:/backup/Elements/Azimuth/DATA/mcmcGeo/99AT265-J261/round5", full.names = TRUE, pattern = glob2rx("X*.bin"))
+    % imX <- chunk.bin(xfiles[8], img)
+    % for (i in 1:7) imX <- chunk.bin(xfiles[i], imX)
+
+    % imX <- imX[-1]
+    % library(rgdal)
+
+    % res1 <- lapply(lapply(imX, f1), function(x) project(cbind(x[[1]]$x, x[[1]]$y), "+proj=laea +lon_0=85 +lat_0=-35 +units=km"))
+    % ans1 <- do.call("rbind", lapply(res1, function(x) apply(x, 2, function(x) diff(range(x)))))
+
+    % #f1 <- function(x) contourLines(as.local.pimg(x), levels = quantile(x$image[x$image > 0], 0.85))
+    % #res2 <- lapply(lapply(imX, f1), function(x) project(cbind(x[[1]]$x, x[[1]]$y), "+proj=laea +lon_0=85 +lat_0=-35 +units=km"))
+    % #ans2 <- do.call("rbind", lapply(res2, function(x) apply(x, 2, function(x) diff(range(x)))))
+
+    % ans2 <- do.call("rbind", lapply(imX, f2))
+
+    % plot(rbind(ans1, ans2), pch = ifelse((1:156) > 78, 1, 16), xlab = "longitude CI (km)", ylab = "latitude CI (km)")
+
+
+%     @
+
+%   \end{center}
+  
+%       \caption{Precision of longitude and latitude values summaries from the posterior,
+%       plotted with the 95\% confidence intervals (closed circles) and the
+%       85\% confidence intervals (open circles) for the fur seal example. }
+%     \label{fig:locationPrecisionAI}
+%   end{figure}
+  
+  
+
+
+\subsection*{Discussion}
+
+In this work we demonstrate a systematic method for determining
+location from archival tag data, with light levels as the primary data
+source.  These results present rich location estimates for two
+different diving animals from data recorded by attached archival
+tags. The variance of location estimates is readily determined from
+the posterior by calculating appropriate confidence intervals.  The
+posterior estimates represent a starting point for further analysis:
+confidence intervals may be calculated from a chosen percentile as
+appropriate for a given model. This approach represents a significant
+improvement for movement models.
+
+The estimation of intermediate as well as primary locations provides a
+way of applying measures of behavioural resources to location
+estimates. Here we have presented full-trip time spent estimates as
+summaries, though the distinction between primary and intermediate
+locations can be used to analyse sections of trips in greater detail.
+
+For the Subantarctic fur seal example we did not apply any
+environmental data, as the animal never dives to a depth that would
+provide any limit in the surrounding bathymetry, and the difficulties
+with temperature matching tag and existing SST data sets overwhelmed
+any clear benefit. These difficulties are the focus of on-going work
+and have been described in **Anderson etc..
+
+Future improvements could include a more topological constraint for
+complicated coastlines and environmental time series that can account
+for non-sensible paths that are otherwise unable to be detected by the
+methods used here. The approach presented here provides a strong
+foundation for improving existing methods and developing new methods
+for light-based geo-location techniques.
+
+
+%% \section{Conclusion}
+We have demonstrated that light data can be used to greater potential
+than existing methods by incorporating it in a Bayesian approach,
+applying environmental data sets and and integrated movement
+model. This work presented the detail and requirements for performing
+light level geo-location as a component of the general framework
+presented in earlier work \cite{sumner2009}.  The approach was
+demonstrated with two example tag data sets, one from a Subantarctic
+fur seal and one from a southern elephant seal. The software used for
+these examples is freely available as the \emph{tripEstimation}
+package developed by the authors \cite{tripEstimation}. The examples
+presented here show time spent estimates of entire trips from
+intermediate locations as well as primary location estimates with
+integrated measures of accuracy derived from the posterior. The
+posterior is represented by large databases of MCMC samples for each
+primary and intermediate estimate.
+
+
+% You may title this section "Methods" or "Models". 
+% "Models" is not a valid title for PLoS ONE authors. However, PLoS ONE
+% authors may use "Analysis" 
+\section*{Methods}
+
+We illustrate the approach with data from two archival tags. The first
+from a Subantarctic fur seal (\emph{Arctocephalus tropicalus}) from
+Amsterdam Island (37$^o$ 55'S, 77$^o$ 30'E) using data collected with
+a Wildlife Computers Time-Depth-Recorder (TDR; MK7) from 10 June 1999
+to 19 July 1999. The data for this tag was kindly provided by Gwen
+Beauplet and its collection is described in \cite{Beauplet2004}.  The
+second tag is from a southern elephant seal (\emph{Mirounga leonina})
+from Macquarie Island (158$^o$ 57'E, 54$^o$ 30'S) using data collected
+with a MK7 TDR from 28 January 2002 to 26 September 2002. Data
+collection methods for this tag are described in \cite{BHMS02}.
+
+This approache uses four broad types of data for determining location. 
+\begin{enumerate}
+\item Prior knowledge which prescribes a maximum range for each animal's
+trip. 
+\item  The primary location data based on the light level time
+series for each twilight. 
+\item Auxiliary environmental data which define the ocean environment
+  or sea surface temperature as a limitation to the animal's range.
+\item A movement model applied to the representation of primary
+  locations $x$ and intermediate locations $z$ that link the estimates
+  temporally \cite{sumner2009}.
+\end{enumerate}
+
+Incorporating the contribution of light data to the likelihood requires
+the following components.
+
+\begin{description}
+\item[Solar Elevation Function]The solar elevation function $\theta(x,
+  t)$ determines the elevation $\theta$ of the sun when observed from
+  location $x$ at time $t$, and is determined by standard astronomical
+  formulae \cite{M91}.
+\item[Calibration Function]The calibration function $l(\theta)$
+  relates the light level $l$ recorded by the tag for a given solar
+  elevation $\theta$. The calibration function can be provided by the
+  tag manufacturer, or determined by applying semi-parametric
+  regression techniques to light levels recorded by the tag at a fixed
+  location.
+\item[Likelihood Function]The likelihood function $p(l|x,t)$
+  is the probability of observing a light level $l$ at a given
+  location $x$ and time $t$. In combination, the solar elevation and
+  calibration functions allow an expected light level $\hat{l}$ to be
+  determined for a given location and time. Given the expected light
+  level, the probability of the observed light level is then
+  determined based on the properties of the tag.
+\end{description}
+
+The primary location data $y$ is tag light data informing the
+locations $x=\{x_{1},x_{2},\ldots,x_{n}\}$ of the tag at a sequence of
+times of twilight $t=\{t_{1},t_{2},\ldots,t_{n}\}$.  For each
+twilight, the light data is extracted for the period in which the sun
+is rising or setting. This yields a sequence of time series, one time
+series $l_{i}=\{l_{i1},l_{i2},\ldots,l_{im}\}$ for each twilight,
+where $l_{ij}$ is the light level (corrected for depth) recorded at
+time $t_{ij}$ within the twilight period.
+
+% Any uniform dampening of light levels can be express as additive because of log
+% measures, we apply a general smoother in a semi-parametric model - see
+% Adelchi, and Silverman - GAM]
+
+%  Assuming the tag has a logarithmic
+% response \cite{H94} a generalized additive model \cite{Wood2004} is
+% used to fit a smooth profile to the light data. The GAM allows an
+% additive offset for each twilight to allow for different weather
+% conditions.
+
+The contribution $p(l_{ik}| x_{i}, t_{ik})$ to the total likelihood is determined
+by assuming the log corrected light levels are Normally distributed
+\begin{displaymath}
+  \log l_{ij} \sim \operatorname{N}
+  \left (\log l(\theta(x_{i},t_{ij}))+k_{i},
+    \sigma^{2}f
+  \right ),
+\end{displaymath}
+where $\theta(x,t)$ is the Sun's elevation at location $x$ and time
+$t$, and $k_{i}$ is a constant to allow for attenuation due to cloud.
+The solar position algorithms of \cite{M91} were encoded as \emph{R}
+functions in the package \emph{tripEstimation} \cite{tripEstimation}.
+For efficiency the location-independent components of solar
+declination and hour angle are first precomputed from $t$ prior to
+simulation.  Following \cite{Ekstrom}, a limit is applied to the
+elevations used by weighting the distribution for values outside of a
+given range.
+
+The posterior is approximated with Markov Chain Monte Carlo (MCMC)
+using a block update Metropolis algorithm as in previous work
+\cite{sumner2009}.  An individual proposal provides solar elevations
+for each $t_{ij}$ using $\sigma(x)$, and from these the calibration
+function provides predicted light levels offset by attenuation
+$k_{i}$. The likelihood of predicted light levels are then calculated
+according to the equation above, providing the basis for estimation.
+
+An illustration of the effects of different locations on the expected
+solar elevation (and thus expected light) is shown in
+Figure~\ref{fig:locations}. The matching solar elevation plots for
+locations along both curves at particular locations during a morning
+are shown in Figure~\ref{fig:elevations1} (squares) and
+Figure~\ref{fig:elevations2} (triangles) respectively. These figures
+illustrate the variation in solar elevation for different locations at
+a given time, and how subtle the changes can be.
+
+The relative line thickness in
+Figures~\ref{fig:elevations1}~and~\ref{fig:elevations2} matches the
+relative point sizes for the locations in
+Figure~\ref{fig:locations}. There are very small difference in the
+pattern of solar elevations for relatively large geographical
+differences along the axis of the morning twilight between light and
+dark. This axis, and its positions later in the day are represented by
+gradations in the background colour.
+
+The band of variation for the pattern of solar elevation around
+sunrise\footnote{Here and elsewhere ``sunrise'' and ``sunset'' simply
+  refer to their everyday meanings of ``general time of day'' at which
+  the sun rises and sets. The ``twilight periods'' are defined as the
+  time of day when there is a reliably recognizable change in the
+  light levels---the input data do not need to be exactly classified
+  as long as the period between dark and light is captured.}  is very
+narrow, matching the relative ``twilight band'' that is represented by
+coloured regions in Figure~\ref{fig:locations}. Different choices of
+location along the sunrise great circle provide very little variation
+in expected pattern of solar elevation. The pattern for locations
+along the corresponding but diametrically opposite ``evening twilight
+band'' provide a lot more differentiation. This is an alternative way
+of viewing the narrow ``twilight region'' of information that is
+available during the morning and evening. The orientation for each of
+the twilight bands switches daily, which for this time match the
+intersecting lines of triangles and squares in
+Figure~\ref{fig:locations}.
+
+This provides the basis for calculating the likelihood for a given
+location, by comparing the difference between measured and predicted
+light levels.  We use the lognormal density as described in
+\cite{sumner2009}. Other methods could include simply the absolute
+difference or a correlation measure, and the data itself could be
+subjected to smoothing or curve-fitting of various kinds as necessary.
+%% here
+
+\subsection*{Auxiliary data} For each segment, any proposal locations
+that do not fall within the prescribed range given by environmental
+data are simply excluded. For efficiency, these ranges are
+pre-calculated and made available as a simple lookup function for
+location at a given time. This masking approach provides a very
+conservative usage of these data, to avoid potentially erroneous
+assumptions. We used a topographic data set to limit the estimation to
+areas of ocean for both examples, as well as Reynolds OISST for the
+elephant seal. Details on the application of these environmental data
+sets was provided in \cite{sumner2009}. **Anderson
+
+\subsection*{Movement model} The model also includes a behavioural
+constraint. The movement model is chosen so that the mean speeds
+between successive locations are independently log Normally
+distributed.
+
+\subsection*{Estimation}
+MCMC requires a starting location for each primary location $x$ along
+the track. This is done using a simplistic grid search to determine
+the approximate maximum likelihood estimates. The likelihood is
+calculated at each point of a coarse grid of locations, using a fixed
+value for the attenuation $k_{i}$.  Locations that are not consistent
+with the prior or masks are excluded.  Taking the mid-point of the
+intersection of the current, previous and next regions for each grid
+provides a location for each segment that is consistent with the light
+data and the movement of the animal. Note that this result will vary
+for different values of $k_{i}$ and ignores the behavioural model.
+
+While this is a very coarse method for initialization, this gives
+rough ``first pass'' locations that can seem quite reasonable.  MCMC
+is in general not dependent upon the actual starting points used
+\cite{Gilks:MCMC} and in theory this only affects the time taken for
+eventual burn-in \footnote{``Burn-in'' is the early period of
+  MCMC samples that are transient and unrepresentative of the
+  equilibrium distribution.}. However, this initialization can be
+problematic as the behavioural model does not account for the topology
+of the prior space where accepted dog-legs paths may imply an
+otherwise impossible journey due to the wide variety of coastline
+shapes, or other irregular spaces implied by the masks.  Also, these
+initial points are of course not the final estimates, which must be
+derived from samples from the posterior after running the full
+estimation model and ensuring good mixing of the chains.
+
+The MCMC estimation proceeds by sampling from these starting locations
+accepting or rejecting proposal locations as detailed in
+\cite{sumner2009}.  Results are generated by direct summarization of
+the posterior, by binning the samples for $x$ and $z$.  From these
+binned estimates, quantiles were calculated for the binned primary $x$
+estimates to give ``most probable'' locations and precision, and time
+spent maps generated from the binned intermediate $z$ estimates. A
+simple density estimate on each segment allow us to determine a
+percentile range. For calculating the location precision of estimates
+we first project the longitude-latitude coordinates to a local
+instance of the Lambert Azimuthal Equal Area projection
+\cite{evenden1990cartographic} to simplify the distance calculations.
+
+
+
+% Do NOT remove this, even if you are not including acknowledgments
+\section*{Acknowledgments}
+
+% The bibtex filename
+\bibliography{H:/ref/mdsRefs}
+
+\section*{Figure Legends}
+%\begin{figure}[!ht]
+%\begin{center}
+%%\includegraphics[width=4in]{figure_name.2.eps}
+%\end{center}
+%\caption{
+%{\bf Bold the first sentence.}  Rest of figure 2  caption.  Caption 
+%should be left justified, as specified by the options to the caption 
+%package.
+%}
+%\label{Figure_label}
+%\end{figure}
+
+
+%%[MAH: combine raw lon/lat plots into a single figure]
+\begin{figure}[htbp]
+  \begin{center}
+\includegraphics[scale=0.5]{figures/rawLonLat_MI.pdf}
+\end{center}
+\caption{
+{\bf Mean longitude and latitude values from the posterior,
+  plotted with surrounding 95\% confidence intervals for elephant seal
+  example.}
+ }
+  \label{fig:rawlonlat_MI}
+\end{figure}
+
+
+\begin{figure}[htbp]
+  \begin{center}
+\includegraphics[scale=0.5]{figures/rawLonLat_AI}
+\end{center}
+\caption{
+{\bf Mean longitude and latitude values from the posterior,
+  plotted with surrounding 95\% confidence intervals for fur seal
+  example.}
+}
+  \label{fig:rawlonlat_AI}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+%\includegraphics[scale=0.5]{figures/locationPrecisionAI}
+\includegraphics[scale=0.5]{figures/Ch4_AI}
+\end{center}
+\caption{
+{\bf Mean longitude and latitude values from the posterior,
+  plotted with the 95\% confidence intervals (closed circles) and the
+  full binned estimate boundary (open circles) for the fur seal
+  example. }
+}
+  \label{fig:locationPrecisionAI}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+\includegraphics[scale=0.5]{figures/locationPrecisionMI}
+\end{center}
+\caption{
+{\bf Mean longitude and latitude values from the posterior,
+  plotted with the 95\% confidence intervals (closed circles) and the
+  full binned estimate boundary (open circles) for the elephant seal
+  example. }
+}
+  \label{fig:locationPrecisionMI}
+\end{figure}
+
+
+
+\begin{figure}[htbp]
+  \begin{center}
+\includegraphics[scale=0.5]{figures/timeSpentZ_MI}
+\end{center}
+\caption{
+{\bf Time spent estimate for entire trip derived from all posterior
+  samples for Macquarie Island elephant seal.}
+}
+  \label{fig:timeSpentZ_MI}
+\end{figure}
+
+
+
+
+
+\begin{figure}[htbp]
+  \begin{center}
+\includegraphics[scale=0.5]{figures/timeSpentZ_AI}
+\end{center}
+\caption{
+{\bf Time spent estimate for entire trip derived from all
+  posterior samples for Amsterdam Island fur seal.} The zonally
+  (east/west) oriented lines in the inset are mean locations of
+  Southern Ocean fronts \cite{orsi1995mea}. Only the Subantarctic
+  front is seen in the main figure region.  }
+  \label{fig:timeSpentZ_AI}
+\end{figure}
+
+
+\begin{figure}[htbp]
+  \begin{center}
+\includegraphics[scale=0.25]{figures/locations.png}
+\end{center}
+\caption{
+{\bf Locations around Macquarie Island (158$^o$ 57'E, 54$^o$ 30'
+  S).} Square icons indicate locations along the current twilight line,
+  triangles indicate the corresponding ``evening''
+  locations. Macquarie Island is at the intersection of the two
+  curves.}
+  \label{fig:locations}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+\includegraphics[width=60mm,height=60mm]{figures/elevations1.png}
+\end{center}
+\caption{
+{\bf Morning twilight solar elevations for locations around
+  Macquarie Island from Figure~\ref{fig:locations} (squares).} The time
+  at which solar elevation is 0 (sunrise) is indicated with a
+  vertical line, and the horizontal lines show solar elevations -5 and
+  3.}
+  \label{fig:elevations1}
+\end{figure}
+
+
+\begin{figure}[htbp]
+  \begin{center}
+\includegraphics[width=60mm,height=60mm]{figures/elevations2.png}
+\end{center}
+\caption{
+{\bf Morning twilight solar elevations for location around
+  Macquarie Island from Figure~\ref{fig:locations} (triangles).} The
+  time at which solar elevation is 0 (sunrise) is indicated
+  with a vertical line, and the horizontal lines show solar elevations
+  -5 and 3}
+  \label{fig:elevations2}
+\end{figure}
+
+
+
+\end{document}
+
